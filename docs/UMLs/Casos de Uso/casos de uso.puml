@@ -7,6 +7,7 @@ actor "Sistema de Notificação" as NotificacaoSystem <<Secundário>>
 actor "Backend" as Backend <<Secundário>>
 
 usecase "Detectar Alteração de Produto na Prateleira" as Detectar
+usecase "Gerenciar Alteração de Estoque Detectada" as GerenciarAlteracao
 usecase "Registrar Entrada de Produto" as Entrada
 usecase "Registrar Saída de Produto" as Saida
 usecase "Processar e Persistir Dados de Estoque" as ProcessarPersistir
@@ -24,22 +25,25 @@ usecase "Enviar Notificação Automática" as EnviarNotificacao
 
 ' Relações do Sistema de Prateleira Inteligente (IoT)
 SPI --> Detectar : <<inicia>>
-Detectar <|-- Entrada : <<extend>>
-Detectar <|-- Saida : <<extend>>
-Detectar --> Backend : <<inicia>> (envia dados brutos)
+Detectar --> GerenciarAlteracao : <<include>>
 
-Backend --> ReceberIoT : <<inicia>>
+GerenciarAlteracao <|-- Entrada : <<extend>> (condição: Produto adicionado)
+GerenciarAlteracao <|-- Saida : <<extend>> (condição: Produto removido)
+
+' Ajuste: O Backend é o responsável por receber e processar dados, não o SPI diretamente.
+' O SPI (Leitor RFID/Microcontrolador) envia dados para o Backend.
+Backend --> ReceberIoT : <<inicia>> (recebe do Microcontrolador)
 ReceberIoT --> ProcessarPersistir : <<include>>
 ProcessarPersistir --> BD : <<usa>> (grava/atualiza)
 BD --> ProcessarPersistir : <<usa>> (consulta)
 
 ' Relações do Backend com alertas
-Backend --> GerarAlertaAcabando : <<inicia>> (com base em regras)
-Backend --> GerarAlertaVencendo : <<inicia>> (com base em regras)
+Backend --> GerarAlertaAcabando : <<inicia>> (com base em regras de estoque)
+Backend --> GerarAlertaVencendo : <<inicia>> (com base em regras de validade)
 GerarAlertaAcabando --> EnviarNotificacao : <<include>>
 GerarAlertaVencendo --> EnviarNotificacao : <<include>>
 
-NotificacaoSystem <-- EnviarNotificacao : <<usa>> (envia)
+NotificacaoSystem <-- EnviarNotificacao : <<usa>> (envia notificação)
 
 ' Relações com o Dashboard / Usuários
 Gerente --> RealizarLogin
@@ -51,7 +55,6 @@ Gerente --> VisualizarAlertaAcabando : <<acessa via Dashboard>>
 Gerente --> VisualizarAlertaVencendo : <<acessa via Dashboard>>
 
 Admin --> AlterarEstoque : <<acessa via Dashboard>>
-Gerente --> AlterarEstoque : <<acessa via Dashboard>>
 
 Backend --> FornecerDashboard : <<inicia>> (disponibiliza dados)
 FornecerDashboard --> ConsultarHistorico : <<inclui>>
