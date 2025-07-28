@@ -1,43 +1,62 @@
 @startuml
 actor "Sistema de Prateleira Inteligente" as SPI <<Secundário>>
 actor "Banco de Dados" as BD <<Secundário>>
-actor "Dashboard" as Dashboard <<Secundário>>
 actor "Gerente" as Gerente <<Primário>>
 actor "Administrador" as Admin <<Primário>>
+actor "Sistema de Notificação" as NotificacaoSystem <<Secundário>>
+actor "Backend" as Backend <<Secundário>>
 
-usecase "Detectar Alteração de Produto da Prateleira" as Detectar
-usecase "Entrada de Produto" as Entrada
-usecase "Saída de Produto" as Saida
-usecase "Enviar Dados ao Banco de Dados" as Enviar
-usecase "Receber informações do IoT" as ReceberIoT
-usecase "Disponibilizar para o Dashboard" as DisponibilizarDashboard
-usecase "Fazer Login" as FazerLogin
-usecase "Consultar histórico de movimentações" as ConsultarHistorico
-usecase "Visualizar status da prateleira" as VisualizarStatus
-usecase "Visualizar alerta de produto acabando" as AlertaAcabando
-usecase "Visualizar alerta de produto vencendo" as AlertaVencendo
-usecase "Alterar quantidade de estoque manualmente" as AlterarEstoque
+usecase "Detectar Alteração de Produto na Prateleira" as Detectar
+usecase "Registrar Entrada de Produto" as Entrada
+usecase "Registrar Saída de Produto" as Saida
+usecase "Processar e Persistir Dados de Estoque" as ProcessarPersistir
+usecase "Receber Dados do Leitor RFID (IoT)" as ReceberIoT
+usecase "Fornecer Dados para Dashboard" as FornecerDashboard
+usecase "Realizar Login" as RealizarLogin
+usecase "Consultar Histórico de Movimentações" as ConsultarHistorico
+usecase "Visualizar Status da Prateleira" as VisualizarStatus
+usecase "Visualizar Alerta de Produto Acabando" as VisualizarAlertaAcabando
+usecase "Visualizar Alerta de Produto Vencendo" as VisualizarAlertaVencendo
+usecase "Alterar Quantidade de Estoque Manualmente" as AlterarEstoque
+usecase "Gerar Alerta de Baixo Estoque" as GerarAlertaAcabando
+usecase "Gerar Alerta de Vencimento Próximo" as GerarAlertaVencendo
+usecase "Enviar Notificação Automática" as EnviarNotificacao
 
-SPI --> Detectar
+' Relações do Sistema de Prateleira Inteligente (IoT)
+SPI --> Detectar : <<inicia>>
 Detectar <|-- Entrada : <<extend>>
 Detectar <|-- Saida : <<extend>>
-Detectar --> Enviar : <<include>>
+Detectar --> Backend : <<inicia>> (envia dados brutos)
 
-BD --> ReceberIoT
-BD --> DisponibilizarDashboard
+Backend --> ReceberIoT : <<inicia>>
+ReceberIoT --> ProcessarPersistir : <<include>>
+ProcessarPersistir --> BD : <<usa>> (grava/atualiza)
+BD --> ProcessarPersistir : <<usa>> (consulta)
 
-Gerente --> FazerLogin
-FazerLogin <|-- ConsultarHistorico : <<extend>>
-FazerLogin <|-- VisualizarStatus : <<extend>>
-FazerLogin <|-- AlertaAcabando : <<extend>>
-FazerLogin <|-- AlertaVencendo : <<extend>>
-FazerLogin <|-- AlterarEstoque : <<extend>>
+' Relações do Backend com alertas
+Backend --> GerarAlertaAcabando : <<inicia>> (com base em regras)
+Backend --> GerarAlertaVencendo : <<inicia>> (com base em regras)
+GerarAlertaAcabando --> EnviarNotificacao : <<include>>
+GerarAlertaVencendo --> EnviarNotificacao : <<include>>
 
-Dashboard --> ConsultarHistorico
-Dashboard --> VisualizarStatus
-Dashboard --> AlertaAcabando
-Dashboard --> AlertaVencendo
-Dashboard --> AlterarEstoque
+NotificacaoSystem <-- EnviarNotificacao : <<usa>> (envia)
 
-Admin --> AlterarEstoque
+' Relações com o Dashboard / Usuários
+Gerente --> RealizarLogin
+Admin --> RealizarLogin
+
+Gerente --> ConsultarHistorico : <<acessa via Dashboard>>
+Gerente --> VisualizarStatus : <<acessa via Dashboard>>
+Gerente --> VisualizarAlertaAcabando : <<acessa via Dashboard>>
+Gerente --> VisualizarAlertaVencendo : <<acessa via Dashboard>>
+
+Admin --> AlterarEstoque : <<acessa via Dashboard>>
+Gerente --> AlterarEstoque : <<acessa via Dashboard>>
+
+Backend --> FornecerDashboard : <<inicia>> (disponibiliza dados)
+FornecerDashboard --> ConsultarHistorico : <<inclui>>
+FornecerDashboard --> VisualizarStatus : <<inclui>>
+FornecerDashboard --> VisualizarAlertaAcabando : <<inclui>>
+FornecerDashboard --> VisualizarAlertaVencendo : <<inclui>>
+
 @enduml
