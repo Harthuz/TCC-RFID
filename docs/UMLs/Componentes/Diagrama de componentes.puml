@@ -1,0 +1,12 @@
+@startuml
+component "Leitor RFID" as RFID
+component "Microcontrolador" as Micro
+component "Backend" as Backend
+component "Banco de Dados" as BD
+component "Dashboard" as Dashboard
+
+RFID --> Micro : dados de leitura de tag
+Micro --> Backend : dados processados
+Backend --> BD : gravação e recuperação de dados
+BD --> Dashboard : exibição no dashboard
+@enduml
