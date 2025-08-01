@@ -16,8 +16,7 @@ usecase "Fornecer Dados para Dashboard" as FornecerDashboard
 usecase "Realizar Login" as RealizarLogin
 usecase "Consultar Histórico de Movimentações" as ConsultarHistorico
 usecase "Visualizar Status da Prateleira" as VisualizarStatus
-usecase "Visualizar Alerta de Produto Acabando" as VisualizarAlertaAcabando
-usecase "Visualizar Alerta de Produto Vencendo" as VisualizarAlertaVencendo
+usecase "Visualizar Alerta de Produto" as VisualizarAlertaProduto
 usecase "Alterar Quantidade de Estoque Manualmente" as AlterarEstoque
 usecase "Gerar Alerta de Baixo Estoque" as GerarAlertaAcabando
 usecase "Gerar Alerta de Vencimento Próximo" as GerarAlertaVencendo
@@ -51,8 +50,7 @@ Admin --> RealizarLogin
 
 Gerente --> ConsultarHistorico : <<acessa via Dashboard>>
 Gerente --> VisualizarStatus : <<acessa via Dashboard>>
-Gerente --> VisualizarAlertaAcabando : <<acessa via Dashboard>>
-Gerente --> VisualizarAlertaVencendo : <<acessa via Dashboard>>
+Gerente --> VisualizarAlertaProduto : <<acessa via Dashboard>>
 
 Admin --> AlterarEstoque : <<acessa via Dashboard>>
 
