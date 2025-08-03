@@ -1,4 +1,6 @@
 @startuml
+
+' ==== Atores ====
 actor "Sistema de Prateleira Inteligente" as SPI <<Secundário>>
 actor "Banco de Dados" as BD <<Secundário>>
 actor "Gerente" as Gerente <<Primário>>
@@ -6,6 +8,9 @@ actor "Administrador" as Admin <<Primário>>
 actor "Sistema de Notificação" as NotificacaoSystem <<Secundário>>
 actor "Backend" as Backend <<Secundário>>
 
+' ==== Casos de Uso ====
+usecase "Consultar Dados atualizados do Banco" as ConsultarDashboard
+usecase "Enviar Dados de RFID para Backend" as EnviaDados
 usecase "Detectar Alteração de Produto na Prateleira" as Detectar
 usecase "Gerenciar Alteração de Estoque Detectada" as GerenciarAlteracao
 usecase "Registrar Entrada de Produto" as Entrada
@@ -22,29 +27,41 @@ usecase "Gerar Alerta de Baixo Estoque" as GerarAlertaAcabando
 usecase "Gerar Alerta de Vencimento Próximo" as GerarAlertaVencendo
 usecase "Enviar Notificação Automática" as EnviarNotificacao
 
-' Relações do Sistema de Prateleira Inteligente (IoT)
-SPI --> Detectar : <<inicia>>
+' ==== Relações do Sistema de Prateleira Inteligente (IoT) e Backend ====
+SPI --> Detectar
 Detectar --> GerenciarAlteracao : <<include>>
 
-GerenciarAlteracao <|-- Entrada : <<extend>> (condição: Produto adicionado)
-GerenciarAlteracao <|-- Saida : <<extend>> (condição: Produto removido)
+GerenciarAlteracao <|-- Entrada : <<extend>>\n(condição: Produto adicionado)
+GerenciarAlteracao <|-- Saida : <<extend>>\n(condição: Produto removido)
 
-' Ajuste: O Backend é o responsável por receber e processar dados, não o SPI diretamente.
-' O SPI (Leitor RFID/Microcontrolador) envia dados para o Backend.
-Backend --> ReceberIoT : <<inicia>> (recebe do Microcontrolador)
+Detectar --> EnviaDados : <<include>>
+EnviaDados --> ReceberIoT : <<include>>
+
+' ==== Backend e Processamento de Dados ====
+Backend --> ReceberIoT : (recebe do Microcontrolador)
 ReceberIoT --> ProcessarPersistir : <<include>>
-ProcessarPersistir --> BD : <<usa>> (grava/atualiza)
-BD --> ProcessarPersistir : <<usa>> (consulta)
 
-' Relações do Backend com alertas
-Backend --> GerarAlertaAcabando : <<inicia>> (com base em regras de estoque)
-Backend --> GerarAlertaVencendo : <<inicia>> (com base em regras de validade)
+AlterarEstoque --> ProcessarPersistir : <<include>>
+ProcessarPersistir --> BD : <<usa>>\n(consulta, grava, atualiza)
+
+' ==== Backend e Alertas ====
+Backend --> GerarAlertaAcabando : (com base em regras de estoque)
+Backend --> GerarAlertaVencendo : (com base em regras de validade)
+
 GerarAlertaAcabando --> EnviarNotificacao : <<include>>
 GerarAlertaVencendo --> EnviarNotificacao : <<include>>
+EnviarNotificacao --> NotificacaoSystem : <<usa>>\n(envia notificação)
 
-NotificacaoSystem <-- EnviarNotificacao : <<usa>> (envia notificação)
+' ==== Acesso a Informações pelo Backend ====
+VisualizarAlertaProduto --> Backend : <<usa>>\n(obter os dados)
+VisualizarStatus --> Backend : <<usa>>\n(obter os dados)
+ConsultarHistorico --> Backend : <<usa>>\n(obter os dados)
+AlterarEstoque --> Backend : <<usa>>\n(enviar a alteração)
+Backend --> FornecerDashboard
+FornecerDashboard --> ConsultarDashboard : <<include>>
+ConsultarDashboard --> BD : <<usa>>\n(consulta os dados)
 
-' Relações com o Dashboard / Usuários
+' ==== Interações com Usuários ====
 Gerente --> RealizarLogin
 Admin --> RealizarLogin
 
@@ -53,11 +70,5 @@ Gerente --> VisualizarStatus : <<acessa via Dashboard>>
 Gerente --> VisualizarAlertaProduto : <<acessa via Dashboard>>
 
 Admin --> AlterarEstoque : <<acessa via Dashboard>>
-
-Backend --> FornecerDashboard : <<inicia>> (disponibiliza dados)
-FornecerDashboard --> ConsultarHistorico : <<inclui>>
-FornecerDashboard --> VisualizarStatus : <<inclui>>
-FornecerDashboard --> VisualizarAlertaAcabando : <<inclui>>
-FornecerDashboard --> VisualizarAlertaVencendo : <<inclui>>
 
 @enduml
