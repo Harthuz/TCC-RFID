@@ -1,0 +1,34 @@
+@startuml
+title Diagrama de Sequência: Ação Administrativa Manual
+
+autonumber
+
+actor "Administrador" as Admin
+participant "Leitor RFID" as RFID <<Device>>
+participant "Microcontrolador\n(ESP32)" as ESP32 <<Gateway IoT>>
+participant "Backend\n(Node.js)" as Backend
+database "Banco de Dados\n(Firebase)" as BD
+participant "Sistema de\nNotificação" as Notificacao
+participant "Dashboard\n(React)" as Dashboard
+
+Admin -> Dashboard: Acessa Dashboard para ajuste manual
+activate Dashboard
+Dashboard -> Backend: GET /api/admin/login
+activate Backend
+Backend -> Backend: Autenticação/Autorização
+Backend --> Dashboard: 200 OK (acesso concedido)
+deactivate Backend
+Dashboard --> Admin: Exibe formulário de ajuste
+
+Admin -> Dashboard: Preenche formulário e clica em Salvar
+Dashboard -> Backend: POST /api/estoque/ajustar_manual\n(produtoId, nova_quantidade)
+activate Backend
+Backend -> BD: Iniciar Transação (ajuste manual)
+activate BD
+BD --> Backend: Confirmação de transação
+deactivate BD
+Backend --> Dashboard: 200 OK (ajuste realizado)
+deactivate Backend
+deactivate Dashboard
+
+@enduml
