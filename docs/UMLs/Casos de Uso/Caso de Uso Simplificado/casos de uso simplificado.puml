@@ -11,6 +11,7 @@ usecase "Consultar Histórico de Movimentações" as ConsultarHistorico
 usecase "Atualizar Estoque Manualmente" as AtualizarEstoque
 usecase "Autenticar no Sistema" as Autenticar
 usecase "Processar Movimentação de Produto" as ProcessarMovimentacao
+usecase "Gerenciar Credenciais de Acesso" as GerenciarCredenciais
 
 ' ==== Relações ====
 Gerente --|> Autenticar
@@ -24,6 +25,7 @@ Admin --|> MonitorarEstoque
 Admin --|> GerenciarAlertas
 Admin --|> ConsultarHistorico
 Admin --|> AtualizarEstoque
+Admin --|> GerenciarCredenciais
 
 SPI --|> ProcessarMovimentacao
 ProcessarMovimentacao .> MonitorarEstoque : <<includes>>

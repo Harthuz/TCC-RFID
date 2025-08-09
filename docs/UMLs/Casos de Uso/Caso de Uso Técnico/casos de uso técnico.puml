@@ -27,6 +27,12 @@ usecase "Gerar Alerta de Baixo Estoque" as GerarAlertaAcabando
 usecase "Gerar Alerta de Vencimento Próximo" as GerarAlertaVencendo
 usecase "Enviar Notificação Automática" as EnviarNotificacao
 
+' ==== Novos casos de uso para gerenciamento de credenciais ====
+usecase "Adicionar Usuário" as AdicionarUsuario
+usecase "Editar Usuário" as EditarUsuario
+usecase "Remover Usuário" as RemoverUsuario
+usecase "Gerenciar Credenciais de Acesso" as GerenciarCredenciais
+
 ' ==== Relações do Sistema de Prateleira Inteligente (IoT) e Backend ====
 SPI --> Detectar
 Detectar --> GerenciarAlteracao : <<include>>
@@ -70,5 +76,14 @@ Gerente --> VisualizarStatus : <<acessa via Dashboard>>
 Gerente --> VisualizarAlertaProduto : <<acessa via Dashboard>>
 
 Admin --> AlterarEstoque : <<acessa via Dashboard>>
+
+' ==== Relações para gerenciamento de usuários ====
+Admin --> GerenciarCredenciais
+GerenciarCredenciais --> AdicionarUsuario : <<include>>
+GerenciarCredenciais --> EditarUsuario : <<include>>
+GerenciarCredenciais --> RemoverUsuario : <<include>>
+AdicionarUsuario --> BD : <<usa>>\n(inserir novo usuário)
+EditarUsuario --> BD : <<usa>>\n(atualizar dados de usuário)
+RemoverUsuario --> BD : <<usa>>\n(excluir usuário)
 
 @enduml

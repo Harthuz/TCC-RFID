@@ -3,7 +3,8 @@ site_name: Documentação TCC
 nav:
   - Home: index.md
   - Descrição Projeto: descrição_projeto.md
-  - Requisitos funcionais e não funcionais: reqs.md
+  - Requisitos funcionais e não funcionais: requisitos.md
+  - Diagrama de casos de uso: descricao_casos_de_uso.md
   - Diagrama de atividade: atividade_uml.md
 
 theme:

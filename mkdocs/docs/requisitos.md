@@ -1,8 +1,8 @@
-### 1. Introdução
+## 1. Introdução
 
 O projeto propõe o desenvolvimento de um Sistema de Prateleira Inteligente focado em mercados autônomos. Seu objetivo principal é monitorar e rastrear o comportamento do estoque em tempo real. A finalidade é otimizar a reposição de produtos e evitar perdas por vencimento ou falta de itens nas prateleiras. Este sistema se insere no contexto da automatização de processos comerciais, aproveitando tecnologias como RFID, IoT e Big Data.
 
-### 2. Objetivos do Sistema
+### 1.1 Objetivos do Sistema
 
 O sistema tem como objetivos ser capaz de:
 * Identificar produtos que são adicionados ou removidos de uma prateleira.
@@ -15,7 +15,7 @@ O sistema tem como objetivos ser capaz de:
 * Aumentar a rastreabilidade dos produtos.
 * Facilitar a gestão do estoque por meio de um dashboard web.
 
-### 3. Tecnologias e Componentes Utilizados
+### 1.2 Tecnologias e Componentes Utilizados
 
 O sistema é construído sobre as seguintes tecnologias e componentes:
 
@@ -33,7 +33,7 @@ O sistema é construído sobre as seguintes tecnologias e componentes:
 
 * **Sistema de Notificação (Push, Email, SMS ou App):** Módulo responsável por enviar alertas automáticos aos usuários ou operadores do sistema.
 
-### 4. Requisitos Funcionais (RF)
+## 2. Requisitos Funcionais (RF)
 
 | Código | Descrição                                                                                                 |
 | :----- | :-------------------------------------------------------------------------------------------------------- |
@@ -44,13 +44,10 @@ O sistema é construído sobre as seguintes tecnologias e componentes:
 | RF05   | Exibir no dashboard a quantidade atual de produtos por categoria.                                         |
 | RF06   | Emitir alertas visuais no dashboard quando um produto estiver em falta.                                   |
 | RF07   | Emitir alertas quando um produto estiver próximo da data de vencimento.                                   |
-| RF08   | Permitir que o usuário gere relatórios em formato PDF sobre: estoque atual, produtos em falta e validade. |
-| RF09   | Permitir a visualização dos dados em gráficos e tabelas.                                                  |
-| RF10   | Enviar dados recebidos do ESP32 para o frontend por WebSocket.                                            |
-| RF11   | Permitir que administradores realizem manutenções no sistema e ajustes, caso necessário.                  |
-| RF12   | Possibilitar a pesquisa e o filtro de produtos dentro do dashboard.                                       |
+| RF08   | Possibilitar a pesquisa e o filtro de produtos dentro do dashboard. |
+| RF09   | Permitir que administradores realizem manutenções no sistema e ajustes, caso necessário.                                                  |
 
-### 5. Requisitos Não Funcionais (RNF)
+## 3. Requisitos Não Funcionais (RNF)
 
 | Código | Descrição |
 | :--- | :--- |
@@ -63,19 +60,19 @@ O sistema é construído sobre as seguintes tecnologias e componentes:
 | RNF07 | O sistema deverá estar hospedado na nuvem, com backups periódicos automáticos. |
 | RNF08 | A interface deverá ser intuitiva, visando facilidade de uso para gerentes e repositores. |
 
-### 6. Restrições
+## 4. Restrições
 
 * O hardware utilizado será o ESP32 WROOM32 integrado a leitores RFID.
 * Para o MVP, a solução será web, sem desenvolvimento específico para aplicativos nativos.
 * A ausência de um broker MQTT levou à escolha dos protocolos HTTP ou WebSocket para comunicação IoT.
 
-### 7. Critérios de Aceitação
+## 5. Critérios de Aceitação
 
 * O dashboard deverá refletir as mudanças de estoque em tempo real.
 * As notificações de produtos vencendo ou em falta devem ser exibidas de forma clara.
 * Usuários não autorizados não devem conseguir acessar dados ou funcionalidades restritas.
 * A comunicação IoT deverá ser estável e segura.
 
-### 8. Considerações Finais
+---
 
-Este documento define claramente os requisitos necessários para o desenvolvimento do sistema. Ele serve como base para a fase de modelagem (banco de dados, diagramas de processos) e posteriormente para o desenvolvimento. Alterações e adições poderão ser feitas conforme a evolução do projeto.
+Essa documentação define claramente os requisitos necessários para o desenvolvimento do sistema. Ele serve como base para a fase de modelagem (banco de dados, diagramas de processos) e posteriormente para o desenvolvimento. Alterações e adições poderão ser feitas conforme a evolução do projeto.
