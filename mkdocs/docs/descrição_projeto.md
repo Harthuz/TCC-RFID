@@ -50,18 +50,8 @@ Para atingir os objetivos do sistema, diversas tecnologias e componentes são in
 
 ## 5. Funcionalidades do Sistema
 
-1. **Monitoramento em Tempo Real**: O dashboard exibe:
-   - Produtos disponíveis.
-   - Quantidade atual.
-   
-2. **Notificações Automáticas**: Alertas são enviados em casos de:
-   - **Baixo Estoque**: Quando a quantidade de um produto atinge o nível mínimo.
-   - **Vencimento Próximo**: Quando a data de validade de um produto está próxima.
-   
-3. **Histórico de Movimentação**: Registra todas as entradas e saídas de produtos, incluindo:
-   - Data e hora da movimentação.
-   - Tipo de movimentação (entrada ou retirada).
-   - Estimativa de quando o produto provavelmente acabará.
+O dashboard exibe em tempo real os produtos disponíveis e a quantidade atual. São enviadas notificações automáticas em casos de baixo estoque, quando a quantidade de um produto atinge o nível mínimo, e de vencimento próximo, quando a data de validade do produto está próxima. O histórico de movimentação registra todas as entradas e saídas de produtos, incluindo data e hora da movimentação, tipo de movimentação (entrada ou retirada).
+
 
 ## 6. Benefícios para Mercados Autônomos
 
@@ -85,6 +75,6 @@ Alguns pontos técnicos a serem observados:
    - Data de validade.
    - Lote.
 
-## 8. Conclusão
+---
 
 O **Sistema de Prateleira Inteligente com RFID** é uma solução inovadora para mercados autônomos. Ele oferece **controle em tempo real do estoque**, **redução de perdas** e **eficiência operacional**, proporcionando uma gestão moderna e automatizada do inventário. Integrando **RFID** com **IoT** e **Big Data**, o sistema promete transformar a maneira como os mercados operam, tornando-os mais rápidos, precisos e eficientes.
