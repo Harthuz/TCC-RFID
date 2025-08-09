@@ -1,0 +1,32 @@
+@startuml
+title Fluxo de "Atualizar estoque e gerar alertas" (UC2, UC3, UC4)
+start
+
+:Backend recebe dados do Microcontrolador (ID da tag, tipo de evento);
+:Backend valida o ID da tag no banco de dados;
+
+if (Validade da Tag?) then (Tag inválida)
+    :Registrar erro;
+    stop
+else (Tag válida)
+    :Atualizar registro do produto no banco de dados;
+    fork
+        :Consultar quantidade mínima do produto;
+        if (Condição de baixo estoque?) then (Quantidade < Mínimo)
+            :Enviar alerta de baixo estoque para o Sistema de Notificação;
+        else (Quantidade >= Mínimo)
+        endif
+    fork again
+        :Consultar data de vencimento do produto;
+        if (Condição de vencimento?) then (Data de Vencimento próxima)
+            :Enviar alerta de vencimento para o Sistema de Notificação;
+        else (Data de Vencimento ok)
+        endif
+    end fork
+endif
+
+:Confirmar a atualização do banco de dados;
+
+stop
+
+@enduml
