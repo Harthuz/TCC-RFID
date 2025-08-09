@@ -4,31 +4,22 @@ actor "Gerente" as Gerente
 actor "Administrador" as Admin
 actor "Sistema de Prateleira Inteligente" as SPI
 
-' ==== Casos de Uso (Simplificados) ====
-usecase "Monitorar Estoque em Tempo Real" as MonitorarEstoque
-usecase "Gerenciar Alertas" as GerenciarAlertas
-usecase "Consultar Histórico de Movimentações" as ConsultarHistorico
-usecase "Atualizar Estoque Manualmente" as AtualizarEstoque
-usecase "Autenticar no Sistema" as Autenticar
-usecase "Processar Movimentação de Produto" as ProcessarMovimentacao
-usecase "Gerenciar Credenciais de Acesso" as GerenciarCredenciais
+' ==== Casos de Uso ====
+usecase "Visualizar Produtos na Dashboard" as VisualizarProdutos
+usecase "Receber Notificações de Estoque" as NotificacoesEstoque
+usecase "Pesquisar Produtos com Filtros" as PesquisarProdutos
+usecase "Gerenciar Perfis do Dashboard" as GerenciarPerfis
+usecase "Modificar Quantidade de Produtos" as ModificarQuantidade
+usecase "Atualizar Estoque em Tempo Real" as AtualizarEstoqueTempoReal
 
 ' ==== Relações ====
-Gerente --|> Autenticar
-Admin --|> Autenticar
+Gerente --> VisualizarProdutos
+Gerente --> NotificacoesEstoque
+Gerente --> PesquisarProdutos
 
-Gerente --|> MonitorarEstoque
-Gerente --|> GerenciarAlertas
-Gerente --|> ConsultarHistorico
+Admin --> GerenciarPerfis
+Admin --> ModificarQuantidade
 
-Admin --|> MonitorarEstoque
-Admin --|> GerenciarAlertas
-Admin --|> ConsultarHistorico
-Admin --|> AtualizarEstoque
-Admin --|> GerenciarCredenciais
-
-SPI --|> ProcessarMovimentacao
-ProcessarMovimentacao .> MonitorarEstoque : <<includes>>
-ProcessarMovimentacao .> GerenciarAlertas : <<includes>>
+SPI --> AtualizarEstoqueTempoReal
 
 @enduml
