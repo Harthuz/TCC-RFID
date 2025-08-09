@@ -1,0 +1,74 @@
+@startuml
+
+' ==== Atores ====
+actor "Sistema de Prateleira Inteligente" as SPI <<Secundário>>
+actor "Banco de Dados" as BD <<Secundário>>
+actor "Gerente" as Gerente <<Primário>>
+actor "Administrador" as Admin <<Primário>>
+actor "Sistema de Notificação" as NotificacaoSystem <<Secundário>>
+actor "Backend" as Backend <<Secundário>>
+
+' ==== Casos de Uso ====
+usecase "Consultar Dados atualizados do Banco" as ConsultarDashboard
+usecase "Enviar Dados de RFID para Backend" as EnviaDados
+usecase "Detectar Alteração de Produto na Prateleira" as Detectar
+usecase "Gerenciar Alteração de Estoque Detectada" as GerenciarAlteracao
+usecase "Registrar Entrada de Produto" as Entrada
+usecase "Registrar Saída de Produto" as Saida
+usecase "Processar e Persistir Dados de Estoque" as ProcessarPersistir
+usecase "Receber Dados do Leitor RFID (IoT)" as ReceberIoT
+usecase "Fornecer Dados para Dashboard" as FornecerDashboard
+usecase "Realizar Login" as RealizarLogin
+usecase "Consultar Histórico de Movimentações" as ConsultarHistorico
+usecase "Visualizar Status da Prateleira" as VisualizarStatus
+usecase "Visualizar Alerta de Produto" as VisualizarAlertaProduto
+usecase "Alterar Quantidade de Estoque Manualmente" as AlterarEstoque
+usecase "Gerar Alerta de Baixo Estoque" as GerarAlertaAcabando
+usecase "Gerar Alerta de Vencimento Próximo" as GerarAlertaVencendo
+usecase "Enviar Notificação Automática" as EnviarNotificacao
+
+' ==== Relações do Sistema de Prateleira Inteligente (IoT) e Backend ====
+SPI --> Detectar
+Detectar --> GerenciarAlteracao : <<include>>
+
+GerenciarAlteracao <|-- Entrada : <<extend>>\n(condição: Produto adicionado)
+GerenciarAlteracao <|-- Saida : <<extend>>\n(condição: Produto removido)
+
+Detectar --> EnviaDados : <<include>>
+EnviaDados --> ReceberIoT : <<include>>
+
+' ==== Backend e Processamento de Dados ====
+Backend --> ReceberIoT : (recebe do Microcontrolador)
+ReceberIoT --> ProcessarPersistir : <<include>>
+
+AlterarEstoque --> ProcessarPersistir : <<include>>
+ProcessarPersistir --> BD : <<usa>>\n(consulta, grava, atualiza)
+
+' ==== Backend e Alertas ====
+Backend --> GerarAlertaAcabando : (com base em regras de estoque)
+Backend --> GerarAlertaVencendo : (com base em regras de validade)
+
+GerarAlertaAcabando --> EnviarNotificacao : <<include>>
+GerarAlertaVencendo --> EnviarNotificacao : <<include>>
+EnviarNotificacao --> NotificacaoSystem : <<usa>>\n(envia notificação)
+
+' ==== Acesso a Informações pelo Backend ====
+VisualizarAlertaProduto --> Backend : <<usa>>\n(obter os dados)
+VisualizarStatus --> Backend : <<usa>>\n(obter os dados)
+ConsultarHistorico --> Backend : <<usa>>\n(obter os dados)
+AlterarEstoque --> Backend : <<usa>>\n(enviar a alteração)
+Backend --> FornecerDashboard
+FornecerDashboard --> ConsultarDashboard : <<include>>
+ConsultarDashboard --> BD : <<usa>>\n(consulta os dados)
+
+' ==== Interações com Usuários ====
+Gerente --> RealizarLogin
+Admin --> RealizarLogin
+
+Gerente --> ConsultarHistorico : <<acessa via Dashboard>>
+Gerente --> VisualizarStatus : <<acessa via Dashboard>>
+Gerente --> VisualizarAlertaProduto : <<acessa via Dashboard>>
+
+Admin --> AlterarEstoque : <<acessa via Dashboard>>
+
+@enduml
