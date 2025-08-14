@@ -6,14 +6,29 @@ const char* ssid = "Vírus";
 const char* password = "397810Wa#";
 const char* serverName = "https://randomuser.me/api/";
 
+const int ledPin = 2; // LED no pino 2
+
 void setup() {
   Serial.begin(9600);
+  pinMode(ledPin, OUTPUT);
+
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
+  Serial.print("Conectando ao Wi-Fi");
+  int attempts = 0;
+
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) { // tenta por ~10s
     delay(500);
     Serial.print(".");
+    attempts++;
   }
-  Serial.println("\nConectado ao Wi-Fi");
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\nConectado ao Wi-Fi");
+    digitalWrite(ledPin, HIGH); // LED acende
+  } else {
+    Serial.println("\nFalha na conexão Wi-Fi");
+    digitalWrite(ledPin, LOW); // LED apaga
+  }
 
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
@@ -23,7 +38,6 @@ void setup() {
     if (httpResponseCode > 0) {
       String payload = http.getString();
 
-      // Usando StaticJsonDocument para evitar warning
       StaticJsonDocument<2048> doc;
       DeserializationError error = deserializeJson(doc, payload);
 
@@ -42,4 +56,6 @@ void setup() {
   }
 }
 
-void loop() {}
+void loop() {
+  // nada aqui
+}
