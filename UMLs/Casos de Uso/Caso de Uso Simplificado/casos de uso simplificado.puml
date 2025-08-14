@@ -2,15 +2,15 @@
 ' ==== Atores ====
 actor "Gerente" as Gerente
 actor "Administrador" as Admin
-actor "Sistema de Prateleira Inteligente" as SPI
+actor "Leitor RFID" as RFID
 
 ' ==== Casos de Uso ====
-usecase "Visualizar Produtos na Dashboard" as VisualizarProdutos
-usecase "Receber Notificações de Estoque" as NotificacoesEstoque
-usecase "Pesquisar Produtos com Filtros" as PesquisarProdutos
-usecase "Gerenciar Perfis do Dashboard" as GerenciarPerfis
-usecase "Modificar Quantidade de Produtos" as ModificarQuantidade
-usecase "Atualizar Estoque em Tempo Real" as AtualizarEstoqueTempoReal
+usecase "Visualiza Produtos na Dashboard" as VisualizarProdutos
+usecase "Recebe Notificações de Estoque" as NotificacoesEstoque
+usecase "Pesquisa Produtos com Filtros" as PesquisarProdutos
+usecase "Gerencia Perfis do Dashboard" as GerenciarPerfis
+usecase "Modifica Quantidade de Produtos" as ModificarQuantidade
+usecase "Registra Entrada e Saída de Produtos" as RegistrarEntradaSaida
 
 ' ==== Relações ====
 Gerente --> VisualizarProdutos
@@ -20,6 +20,6 @@ Gerente --> PesquisarProdutos
 Admin --> GerenciarPerfis
 Admin --> ModificarQuantidade
 
-SPI --> AtualizarEstoqueTempoReal
+RFID --> RegistrarEntradaSaida
 
 @enduml
