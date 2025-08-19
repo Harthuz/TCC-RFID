@@ -1,47 +1,61 @@
 /*
-   Adaptado para ESP32 WROOM-32
+  Leitor UHF-RFID com ESP32 WROOM-32
+  Baseado no protocolo oficial do módulo (Unit-RFID-UHF-Protocol-EN)
 
-   - ESP32 possui múltiplas portas seriais: Serial, Serial1, Serial2.
-   - Neste exemplo, usaremos Serial2 para comunicação com o módulo RFID.
-   - Ajuste os pinos RX/TX conforme sua ligação:
-       RX do ESP32 ← TX do leitor
-       TX do ESP32 → RX do leitor
-   - Ajuste o baud rate conforme o módulo (geralmente 9600 ou 115200)
+  Conexões:
+    ESP32 RX (GPIO16) <- TX do leitor RFID
+    ESP32 TX (GPIO17) -> RX do leitor RFID
+    GND <-> GND
+    5V  <-> VCC (ou 3.3V se suportado)
 */
 
-#define RX_PIN 16  // Pino RX do ESP32 conectado ao TX do leitor
-#define TX_PIN 17  // Pino TX do ESP32 conectado ao RX do leitor
+#define RX_PIN 16 // RX do ESP32
+#define TX_PIN 17 // TX do ESP32
 
-// Comando "Single Polling" (ler uma única tag no campo)
-byte singlePollingCmd[] = {0xBB, 0x00, 0x22, 0x00, 0x00, 0x22, 0x7E};
+// Comando oficial "Single Polling" (inventário de uma tag)
+byte singlePollingCmd[] = { 0xBB, 0x00, 0x22, 0x00, 0x00, 0x22, 0x7E };
 
+// ------------------------ SETUP ------------------------
 void setup() {
-  Serial.begin(115200);          // Monitor Serial do PC
-  Serial2.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN); // Serial para o leitor RFID
+  Serial.begin(9600); // Monitor Serial
+  Serial2.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN); // UART com módulo RFID
 
-  Serial.println("Iniciando RFID UHF no ESP32...");
+  Serial.println("Iniciando leitor UHF-RFID...");
 }
 
+// ------------------------ LOOP ------------------------
 void loop() {
-  // Envia o comando "Single Polling" para o leitor
-  Serial2.write(singlePollingCmd, sizeof(singlePollingCmd));
-  Serial.println("Comando enviado: Single Polling");
+  enviarComando(singlePollingCmd, sizeof(singlePollingCmd));
+  delay(1000); // Faz leitura a cada 1 segundo
+}
 
-  // Aguarda resposta do leitor por até 500 ms
-  unsigned long start = millis();
-  while (millis() - start < 500) {
-    if (Serial2.available()) {
+// ------------------------ FUNÇÕES AUXILIARES ------------------------
+void enviarComando(byte *cmd, int len) {
+  // Envia comando para o módulo RFID
+  Serial2.write(cmd, len);
+
+  Serial.print(">> Enviado: ");
+  for (int i = 0; i < len; i++) {
+    printHex(cmd[i]);
+    Serial.print(" ");
+  }
+  Serial.println();
+
+  delay(100); // Aguarda resposta
+
+  if (Serial2.available()) {
+    Serial.println("<< Resposta recebida:");
+    while (Serial2.available()) {
       byte b = Serial2.read();
       printHex(b);
       Serial.print(" ");
     }
+    Serial.println();
+  } else {
+    Serial.println("Nenhuma resposta do módulo.");
   }
-
-  Serial.println();
-  delay(2000); // espera 2 segundos antes da próxima leitura
 }
 
-// Função auxiliar: imprime byte em HEX sempre com 2 dígitos
 void printHex(byte num) {
   if (num < 0x10) Serial.print("0");
   Serial.print(num, HEX);
