@@ -1,10 +1,9 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <ArduinoJson.h>
 
 const char* ssid = "Vírus";
 const char* password = "397810Wa#";
-const char* serverName = "https://randomuser.me/api/";
+const char* serverName = "https://vercel-api-two-brown.vercel.app/";
 
 const int ledPin = 2; // LED no pino 2
 
@@ -24,35 +23,36 @@ void setup() {
 
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("\nConectado ao Wi-Fi");
-    digitalWrite(ledPin, HIGH); // LED acende
-  } else {
-    Serial.println("\nFalha na conexão Wi-Fi");
-    digitalWrite(ledPin, LOW); // LED apaga
-  }
 
-  if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     http.begin(serverName);
 
+    Serial.println("Contagem regressiva de 10 segundos:");
+  
+    for (int i = 10; i >= 0; i--) {
+      Serial.println(i);
+      delay(500); // espera meio segundo
+    }
+  
+    Serial.println("Tempo esgotado!");
+
     int httpResponseCode = http.GET();
-    if (httpResponseCode > 0) {
+    if (httpResponseCode == 200) {
       String payload = http.getString();
+      Serial.print("Resposta da API: ");
+      Serial.println(payload);
 
-      StaticJsonDocument<2048> doc;
-      DeserializationError error = deserializeJson(doc, payload);
-
-      if (!error) {
-        const char* firstName = doc["results"][0]["name"]["first"];
-        const char* lastName  = doc["results"][0]["name"]["last"];
-        Serial.print("Primeiro nome: "); Serial.println(firstName);
-        Serial.print("Último nome: "); Serial.println(lastName);
-      } else {
-        Serial.print("Erro ao parsear JSON: "); Serial.println(error.f_str());
-      }
+      digitalWrite(ledPin, HIGH); // acende LED se a API respondeu corretamente
     } else {
-      Serial.print("Erro na requisição. Código: "); Serial.println(httpResponseCode);
+      Serial.print("Erro na requisição. Código: ");
+      Serial.println(httpResponseCode);
+
+      digitalWrite(ledPin, LOW); // apaga LED se não houve resposta 200
     }
     http.end();
+  } else {
+    Serial.println("\nFalha na conexão Wi-Fi");
+    digitalWrite(ledPin, LOW); // apaga LED se não conectou
   }
 }
 
