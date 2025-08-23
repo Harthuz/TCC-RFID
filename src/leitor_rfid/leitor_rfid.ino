@@ -6,7 +6,7 @@
     ESP32 RX (GPIO16) <- TX do leitor RFID
     ESP32 TX (GPIO17) -> RX do leitor RFID
     GND <-> GND
-    5V  <-> VCC (ou 3.3V se suportado)
+    5V  <-> VCC
 */
 
 #define RX_PIN 16 // RX do ESP32
