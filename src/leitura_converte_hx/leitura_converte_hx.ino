@@ -16,8 +16,7 @@ void setup() {
 }
 
 void loop() {
-  writeUserMemory();
-  //enviarComando(singlePollingCmd, sizeof(singlePollingCmd));
+  enviarComando(singlePollingCmd, sizeof(singlePollingCmd));
   delay(1000);
 }
 
@@ -93,40 +92,4 @@ void traduzirResposta(byte *data, int len) {
 void printHex(byte num) {
   if (num < 0x10) Serial.print("0");
   Serial.print(num, HEX);
-}
-
-// Variável para gravar na User Memory
-byte userData[] = { 0x4C, 0x4F, 0x54, 0x45 }; // "LOTE" em ASCII HEX
-
-void writeUserMemory() {
-  byte cmd[32];
-  int idx = 0;
-
-  cmd[idx++] = 0xBB;
-  cmd[idx++] = 0x00;
-  cmd[idx++] = 0x49;
-
-  uint16_t paramLen = 9 + sizeof(userData);
-  cmd[idx++] = (paramLen >> 8) & 0xFF;
-  cmd[idx++] = paramLen & 0xFF;
-
-  // Access Password (0x00000000)
-  cmd[idx++] = 0x00; cmd[idx++] = 0x00; cmd[idx++] = 0x00; cmd[idx++] = 0x00;
-
-  cmd[idx++] = 0x03; // MemBank User
-  cmd[idx++] = 0x00; cmd[idx++] = 0x00; // Start Addr = 0
-  cmd[idx++] = 0x00; cmd[idx++] = sizeof(userData)/2; // DL em words
-
-  // Dados
-  for (int i=0; i<sizeof(userData); i++) cmd[idx++] = userData[i];
-
-  // Checksum
-  byte cs = 0;
-  for (int i=1; i<idx; i++) cs += cmd[i];
-  cmd[idx++] = cs;
-
-  cmd[idx++] = 0x7E;
-
-  Serial2.write(cmd, idx);
-  Serial.println(">> Comando Write User Memory enviado.");
 }
