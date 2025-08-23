@@ -58,5 +58,5 @@ void enviarComando(byte *cmd, int len) {
 
 void printHex(byte num) {
   if (num < 0x10) Serial.print("0");
-  Serial.print(num, HEX);
+  Serial.print(num, HEX); 
 }
