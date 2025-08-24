@@ -45,7 +45,7 @@ void enviarComando(byte *cmd, int len) {
     }
     Serial.println();
 
-    // traduz a resposta (opcional)
+    // traduz a resposta
     traduzirResposta(resposta, count);
   } else {
     Serial.println("Nenhuma resposta do módulo.");
@@ -88,13 +88,13 @@ void traduzirResposta(byte *data, int len) {
       }
 
       // Exibe informações da tag lida
-      Serial.println("---- TAG LIDA ----");
-      Serial.print("RSSI: "); Serial.print((int8_t)rssi); Serial.println(" dBm");
-      Serial.print("PC: "); Serial.print(pc_msb, HEX); Serial.println(pc_lsb, HEX);
-      Serial.print("EPC (HEX): "); Serial.println(epcHex);
-      Serial.print("EPC (ASCII): "); Serial.println(epcAscii);
-      Serial.print("CRC: 0x"); Serial.println(crc, HEX);
-      Serial.println("------------------");
+//      Serial.println("---- TAG LIDA ----");
+//      Serial.print("RSSI: "); Serial.print((int8_t)rssi); Serial.println(" dBm");
+//      Serial.print("PC: "); Serial.print(pc_msb, HEX); Serial.println(pc_lsb, HEX);
+//      Serial.print("EPC (HEX): "); Serial.println(epcHex);
+//      Serial.print("EPC (ASCII): "); Serial.println(epcAscii);
+//      Serial.print("CRC: 0x"); Serial.println(crc, HEX);
+//      Serial.println("------------------");
 
       // Avança para o próximo pacote de tag
       i = crcIndex + 2 + 1; // O pacote termina 2 bytes após o CRC + 1 byte do 0x7E
