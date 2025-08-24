@@ -1,32 +1,29 @@
 #define RX_PIN 16 // RX do ESP32
 #define TX_PIN 17 // TX do ESP32
-#define TEMPO_DE_LEITURA 10000  // Tempo total de leitura em milissegundos (10 segundos)
+#define NUMERO_DE_TAGS 13  // Número de tags a serem lidas
 
 // Comando oficial "Single Polling" (inventário de uma tag)
 byte singlePollingCmd[] = { 0xBB, 0x00, 0x22, 0x00, 0x00, 0x22, 0x7E };
 
-unsigned long tempoInicio;  // Marca o início do tempo de leitura
-String tagsDetectadas[100]; // Lista para armazenar as tags detectadas (tamanho máximo de 100)
+int contadorTags = 0;  // Contador para o número de tags lidas
+String tagsDetectadas[NUMERO_DE_TAGS];  // Lista para armazenar as tags detectadas
 
 void setup() {
   Serial.begin(9600);
   Serial2.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.println("Iniciando leitor UHF-RFID...");
-  
-  tempoInicio = millis();  // Inicia o contador de tempo
 }
 
 void loop() {
-  // Enquanto o tempo de leitura não expirar, continue lendo as tags
-  while (millis() - tempoInicio < TEMPO_DE_LEITURA) {
+  // Continua lendo até atingir o número de tags definido
+  while (contadorTags < NUMERO_DE_TAGS) {
     enviarComando(singlePollingCmd, sizeof(singlePollingCmd));
     delay(1000);  // Aguarda 1 segundo entre as leituras
   }
-  
-  // Após o tempo de leitura, lista as tags detectadas
+
+  // Após atingir o número de tags, lista as tags detectadas
   listarTagsDetectadas();
-  delay(5000);  // Espera 5 segundos antes de iniciar uma nova leitura
-  tempoInicio = millis();  // Reinicia o tempo de leitura
+  while(1);  // Finaliza o loop, evitando novas leituras
 }
 
 void enviarComando(byte *cmd, int len) {
@@ -43,16 +40,16 @@ void enviarComando(byte *cmd, int len) {
     }
 
     // imprime bruto (debug)
-    Serial.print("<< Resposta (HEX): ");
-    for (int i = 0; i < count; i++) {
-      printHex(resposta[i]); Serial.print(" ");
-    }
-    Serial.println();
+    // Serial.print("<< Resposta (HEX): ");
+    // for (int i = 0; i < count; i++) {
+    //   printHex(resposta[i]); Serial.print(" ");
+    // }
+    // Serial.println();
 
     // traduz a resposta (opcional)
     traduzirResposta(resposta, count);
   } else {
-    Serial.println("Nenhuma resposta do módulo.");
+    // Serial.println("Nenhuma resposta do módulo.");
   }
 }
 
@@ -88,16 +85,17 @@ void traduzirResposta(byte *data, int len) {
       // Verifica se a tag já foi detectada antes
       if (!tagJaDetectada(epcHex)) {
         adicionarTagDetectada(epcHex);  // Adiciona a tag à lista de tags detectadas
+        contadorTags++;  // Incrementa o contador de tags lidas
       }
 
-      // Exibe informações da tag lida
-      Serial.println("---- TAG LIDA ----");
-      Serial.print("RSSI: "); Serial.print((int8_t)rssi); Serial.println(" dBm");
-      Serial.print("PC: "); Serial.print(pc_msb, HEX); Serial.println(pc_lsb, HEX);
-      Serial.print("EPC (HEX): "); Serial.println(epcHex);
-      Serial.print("EPC (ASCII): "); Serial.println(epcAscii);
-      Serial.print("CRC: 0x"); Serial.println(crc, HEX);
-      Serial.println("------------------");
+      // Exibe informações da tag lida (descomentado para debug)
+      // Serial.println("---- TAG LIDA ----");
+      // Serial.print("RSSI: "); Serial.print((int8_t)rssi); Serial.println(" dBm");
+      // Serial.print("PC: "); Serial.print(pc_msb, HEX); Serial.println(pc_lsb, HEX);
+      // Serial.print("EPC (HEX): "); Serial.println(epcHex);
+      // Serial.print("EPC (ASCII): "); Serial.println(epcAscii);
+      // Serial.print("CRC: 0x"); Serial.println(crc, HEX);
+      // Serial.println("------------------");
 
       // Avança para o próximo pacote de tag
       i = crcIndex + 2 + 1; // O pacote termina 2 bytes após o CRC + 1 byte do 0x7E
@@ -109,7 +107,7 @@ void traduzirResposta(byte *data, int len) {
 
 // Função para verificar se a tag já foi detectada
 bool tagJaDetectada(String tag) {
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < NUMERO_DE_TAGS; i++) {
     if (tagsDetectadas[i] == tag) {
       return true;
     }
@@ -119,7 +117,7 @@ bool tagJaDetectada(String tag) {
 
 // Função para adicionar uma tag à lista de tags detectadas
 void adicionarTagDetectada(String tag) {
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < NUMERO_DE_TAGS; i++) {
     if (tagsDetectadas[i] == "") {  // Encontra a primeira posição vazia
       tagsDetectadas[i] = tag;
       break;
@@ -130,7 +128,7 @@ void adicionarTagDetectada(String tag) {
 // Função para listar todas as tags detectadas
 void listarTagsDetectadas() {
   Serial.println("---- LISTA DE TAGS DETECTADAS ----");
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < NUMERO_DE_TAGS; i++) {
     if (tagsDetectadas[i] != "") {
       Serial.println(tagsDetectadas[i]);
     }
