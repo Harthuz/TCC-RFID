@@ -18,7 +18,6 @@ void loop() {
   // Continua lendo até atingir o número de tags definido
   while (contadorTags < NUMERO_DE_TAGS) {
     enviarComando(singlePollingCmd, sizeof(singlePollingCmd));
-    delay(1000);  // Aguarda 1 segundo entre as leituras
   }
 
   // Após atingir o número de tags, lista as tags detectadas
