@@ -1,0 +1,86 @@
+@startuml
+title Diagrama de Classes - Gerenciamento de Estoque IoT
+
+' ====== Classes de Domínio ======
+class Produto {
+  - id: int
+  - nome: string
+  - codigoRFID: string
+  - validade: Date
+  - quantidade: int
+  + isVencido(): bool
+  + isEstoqueBaixo(): bool
+}
+
+class Estoque {
+  - id: int
+  - listaProdutos: List<Produto>
+  + adicionarProduto(p: Produto)
+  + removerProduto(p: Produto)
+  + atualizarProduto(p: Produto)
+}
+
+class Alerta {
+  - id: int
+  - mensagem: string
+  - tipo: string
+  - dataHora: DateTime
+  + gerarAlerta()
+  + enviarAlerta()
+}
+
+class Gerente {
+  - id: int
+  - nome: string
+  - email: string
+  - senha: string
+  + visualizarEstoque()
+  + receberNotificacao(a: Alerta)
+}
+
+' ====== Classes Técnicas ======
+class LeitorRFID {
+  + lerTags(): List<string>
+}
+
+class ESP32 {
+  - id: int
+  - listaTagsAtual: List<string>
+  - listaTagsAnterior: List<string>
+  + compararListas(): bool
+  + enviarAtualizacao(tags: List<string>)
+}
+
+class Backend {
+  + atualizarEstoque(tags: List<string>)
+  + analisarDiferencas()
+  + enviarParaDashboard(dados: Estoque)
+  + triggerNotificacao(alerta: Alerta)
+}
+
+class BancoDeDados {
+  + buscarEstoque(): Estoque
+  + salvarEstoque(e: Estoque)
+  + atualizarEstoque(e: Estoque)
+}
+
+class Dashboard {
+  + atualizarUI(e: Estoque)
+}
+
+class SistemaNotificacao {
+  + enviarPush(g: Gerente, a: Alerta)
+}
+
+' ====== Relações ======
+Estoque "1" *-- "*" Produto
+Backend --> BancoDeDados
+Backend --> Dashboard
+Backend --> SistemaNotificacao
+Backend --> Estoque
+SistemaNotificacao --> Gerente
+Alerta --> Gerente
+ESP32 --> Backend
+LeitorRFID --> ESP32
+
+@enduml

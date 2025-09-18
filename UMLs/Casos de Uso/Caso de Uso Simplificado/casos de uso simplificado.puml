@@ -1,25 +1,23 @@
 @startuml
-' ==== Atores ====
-actor "Gerente" as Gerente
-actor "Administrador" as Admin
+
+actor Gerente
+actor Funcionario
 actor "Leitor RFID" as RFID
 
-' ==== Casos de Uso ====
-usecase "Visualiza Produtos na Dashboard" as VisualizarProdutos
-usecase "Recebe Notificações de Estoque" as NotificacoesEstoque
-usecase "Pesquisa Produtos com Filtros" as PesquisarProdutos
-usecase "Gerencia Perfis do Dashboard" as GerenciarPerfis
-usecase "Modifica Quantidade de Produtos" as ModificarQuantidade
-usecase "Registra Entrada e Saída de Produtos" as RegistrarEntradaSaida
+rectangle Sistema {
+    usecase "Gerenciar Funcionários" as UC1
+    usecase "Visualizar Quantidade de Produtos" as UC2
+    usecase "Recebe Notificação Produto Perto da Validade" as UC3
+    usecase "Recebe Notificação Produto Acabando" as UC4
+    usecase "Visualizar Histórico de Movimentação" as UC5
+    usecase "Registrar Entrada/Saída de Produtos" as UC6
+}
 
-' ==== Relações ====
-Gerente --> VisualizarProdutos
-Gerente --> NotificacoesEstoque
-Gerente --> PesquisarProdutos
-
-Admin --> GerenciarPerfis
-Admin --> ModificarQuantidade
-
-RFID --> RegistrarEntradaSaida
+Gerente --> UC1
+Funcionario --> UC2
+Funcionario --> UC3
+Funcionario --> UC4
+Funcionario --> UC5
+RFID --> UC6
 
 @enduml
