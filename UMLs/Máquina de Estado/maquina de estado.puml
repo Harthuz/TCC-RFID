@@ -1,0 +1,36 @@
+@startuml
+title Diagrama de Máquina de Estados - Produto (Aprimorado conforme UML 2 - Guedes)
+
+' Estado inicial
+[*] --> ForaDeEstoque : Produto cadastrado
+
+' Estados principais
+state "Disponível" as Disponivel
+state "Estoque Baixo" as EstoqueBaixo
+state "Fora de Estoque" as ForaDeEstoque
+state "Vencimento Próximo" as VencimentoProximo
+
+' Transições principais
+ForaDeEstoque --> Disponivel : Produto Adicionado [qtd > min]
+ForaDeEstoque --> EstoqueBaixo : Produto Adicionado [qtd <= min]
+
+Disponivel --> EstoqueBaixo : Produto Removido [qtd <= min]
+EstoqueBaixo --> ForaDeEstoque : Produto Removido [qtd == 0]
+EstoqueBaixo --> Disponivel : Produto Adicionado [qtd > min]
+
+' Transições relacionadas a validade
+Disponivel --> VencimentoProximo : Verificação de Validade [data_validade próxima]
+EstoqueBaixo --> VencimentoProximo : Verificação de Validade [data_validade próxima]
+
+' Estado composto (submáquina de Vencimento Próximo)
+state VencimentoProximo {
+    [*] --> Monitorando
+    state "Monitorando" as Monitorando
+    Monitorando --> Monitorando : Verificação periódica
+    Monitorando --> [*] : Produto Descartado
+}
+
+' Estado final
+ForaDeEstoque --> [*] : Produto inativo (descartado ou vendido)
+
+@enduml
