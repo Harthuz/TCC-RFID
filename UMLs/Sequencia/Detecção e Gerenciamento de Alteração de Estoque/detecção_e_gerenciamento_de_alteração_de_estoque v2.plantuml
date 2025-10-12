@@ -1,0 +1,40 @@
+@startuml
+title Diagrama de Sequência: Atualização em Tempo Real via Dispositivo IoT
+
+autonumber
+
+actor "Gerente" as Gerente
+participant "Leitor RFID" as RFID <<Device>>
+participant "Microcontrolador\n(ESP32)" as ESP32 <<Gateway IoT>>
+participant "Backend\n(Node.js)" as Backend
+database "Banco de Dados\n(Firebase)" as BD
+participant "Dashboard\n(React)" as Dashboard
+
+== Fluxo em Tempo Real ==
+
+RFID -> ESP32: Detecta evento RFID (entrada/saída de tag)
+activate ESP32
+
+ESP32 -> Backend: POST /updateProductHistory\n(epc, status)
+activate Backend
+
+Backend -> BD: productModel.updateStatusProduct(epc, status)
+activate BD
+BD --> Backend: Confirmação de atualização no histórico e status
+deactivate BD
+
+Backend -> Backend: Broadcast de atualização em tempo real
+Backend -> Dashboard: WebSocket/Push\n(dados_atualizados)
+activate Dashboard
+Dashboard --> Dashboard: Atualiza interface do usuário
+
+opt Se estoque baixo ou produto vencendo
+    Dashboard -> Gerente: Exibe alerta visual/sonoro de estoque
+end
+
+deactivate Dashboard
+Backend --> ESP32: 200 OK (confirmação da atualização)
+deactivate Backend
+deactivate ESP32
+
+@enduml
