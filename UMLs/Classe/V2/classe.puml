@@ -1,0 +1,100 @@
+plantuml
+@startuml
+' ==== MODELS ====
+package "models" {
+    class ProductModel {
+        +getHistory(): Promise<Array>
+        +updateStatusProduct(epc, status): Promise<void>
+        +getAllProducts(): Promise<Array>
+    }
+}
+
+' ==== CONTROLLERS ====
+package "controllers" {
+    class ProductController {
+        +getHistoryData(req, res): Promise<void>
+        +getProductStatus(req, res): Promise<void>
+        -isExpired(product): boolean
+        -categorizeStock(product): string
+        -summarizeStockStatus(product_status): object
+    }
+    class IotController {
+        +updateHistory(req, res): Promise<void>
+    }
+}
+
+' ==== SERVICES ====
+package "services" {
+    class SocketService {
+        +initWebSocket(server)
+        +broadcast()
+    }
+}
+
+' ==== MIDDLEWARES ====
+package "middlewares" {
+    class Auth {
+        +checkApiKey(req, res, next)
+    }
+}
+
+' ==== ROUTES ====
+package "routes" {
+    class IotRoutes
+    class ProductRoutes
+}
+
+' ==== CONFIG ====
+package "config" {
+    class DB {
+        (connection pool)
+    }
+}
+
+' ==== EXPRESS SERVER ====
+class Server {
+    -express
+    -http
+    +listen(port)
+}
+
+' ==== RELACIONAMENTOS MVC ====
+' Controllers usam Models
+ProductController --> ProductModel : usa
+IotController --> ProductModel : usa
+
+' Controllers usam Services
+IotController --> SocketService : usa
+
+' Rotas usam Controllers
+IotRoutes --> IotController : usa
+ProductRoutes --> ProductController : usa
+
+' Middleware Auth é usado pelas rotas
+IotRoutes --> Auth : middleware
+ProductRoutes --> Auth : middleware
+
+' Controllers dependem de Express (req, res)
+ProductController ..> Server : Express req/res
+IotController ..> Server : Express req/res
+
+' Models usam DB
+ProductModel --> DB : usa
+
+' Server usa rotas e middlewares
+Server --> IotRoutes : registra
+Server --> ProductRoutes : registra
+Server --> Auth : registra
+
+' Server inicializa SocketService
+Server --> SocketService : initWebSocket
+
+' ==== NOTAS DE DIREÇÃO ====
+' Dependências principais:
+' Controllers --> Models
+' Controllers --> Services
+' Rotas --> Controllers
+' Server --> Rotas, Middlewares, Services
+' Models --> DB
+
+@enduml

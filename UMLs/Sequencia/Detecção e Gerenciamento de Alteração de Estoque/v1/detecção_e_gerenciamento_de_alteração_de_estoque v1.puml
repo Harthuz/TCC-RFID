@@ -3,7 +3,6 @@ title Diagrama de Sequência: Detecção e Gerenciamento de Alteração de Estoq
 
 autonumber
 
-actor "Gerente" as Gerente
 participant "Leitor RFID" as RFID <<Device>>
 participant "Microcontrolador\n(ESP32)" as ESP32 <<Gateway IoT>>
 participant "Backend\n(Node.js)" as Backend

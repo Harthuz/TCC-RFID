@@ -29,7 +29,7 @@ activate Dashboard
 Dashboard --> Dashboard: Atualiza interface do usuário
 
 opt Se estoque baixo ou produto vencendo
-    Dashboard -> Gerente: Exibe alerta visual/sonoro de estoque
+    Dashboard -> Gerente: Exibe alerta visual
 end
 
 deactivate Dashboard
