@@ -1,4 +1,3 @@
-plantuml
 @startuml
 ' ==== MODELS ====
 package "models" {
@@ -38,12 +37,6 @@ package "middlewares" {
     }
 }
 
-' ==== ROUTES ====
-package "routes" {
-    class IotRoutes
-    class ProductRoutes
-}
-
 ' ==== CONFIG ====
 package "config" {
     class DB {
@@ -66,13 +59,8 @@ IotController --> ProductModel : usa
 ' Controllers usam Services
 IotController --> SocketService : usa
 
-' Rotas usam Controllers
-IotRoutes --> IotController : usa
-ProductRoutes --> ProductController : usa
-
-' Middleware Auth é usado pelas rotas
-IotRoutes --> Auth : middleware
-ProductRoutes --> Auth : middleware
+' Middleware Auth é usado pelas rotas (diretamente via server)
+Server --> Auth : middleware
 
 ' Controllers dependem de Express (req, res)
 ProductController ..> Server : Express req/res
@@ -81,10 +69,9 @@ IotController ..> Server : Express req/res
 ' Models usam DB
 ProductModel --> DB : usa
 
-' Server usa rotas e middlewares
-Server --> IotRoutes : registra
-Server --> ProductRoutes : registra
-Server --> Auth : registra
+' Server usa controllers (via rotas internas)
+Server --> ProductController
+Server --> IotController
 
 ' Server inicializa SocketService
 Server --> SocketService : initWebSocket
@@ -93,8 +80,7 @@ Server --> SocketService : initWebSocket
 ' Dependências principais:
 ' Controllers --> Models
 ' Controllers --> Services
-' Rotas --> Controllers
-' Server --> Rotas, Middlewares, Services
+' Server --> Controllers, Middlewares, Services
 ' Models --> DB
 
 @enduml
