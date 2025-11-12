@@ -5,10 +5,10 @@ autonumber
 
 actor "Gerente" as Gerente
 participant "Leitor RFID" as RFID <<Device>>
-participant "Microcontrolador\n(ESP32)" as ESP32 <<Gateway IoT>>
-participant "Backend\n(Node.js)" as Backend
-database "Banco de Dados\n(Firebase)" as BD
-participant "Dashboard\n(React)" as Dashboard
+participant "Microcontrolador" as ESP32 <<Gateway IoT>>
+participant "Backend" as Backend
+database "Banco de Dados" as BD
+participant "Dashboard" as Dashboard
 
 == Fluxo em Tempo Real ==
 
